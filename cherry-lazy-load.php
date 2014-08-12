@@ -62,7 +62,7 @@ class cherry_lazy_load {
    * @param array  $atts          Shortcode attributes.
    * @param string $shortcodename Shortcode name.
    */
-  function add_lazy_load_wrap( $output, $atts, $shortcodename ) {
+  public function add_lazy_load_wrap( $output, $atts, $shortcodename ) {
 
     if ( empty( $atts['custom_class'] ) ) {
       return $output;
@@ -136,5 +136,8 @@ class cherry_lazy_load {
 
 }
 
-new cherry_lazy_load();
+global $cherry_lazy_load;
+if ( !isset($cherry_lazy_load) )
+    $cherry_lazy_load = new cherry_lazy_load();
+
 ?>
