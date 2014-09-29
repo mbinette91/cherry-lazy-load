@@ -19,7 +19,11 @@ function appearBox(element, element_top, bottom_of_window) {
     var buffer = element.outerHeight()/2;
     if( bottom_of_window > element_top + buffer) {
         setTimeout(function(){
-            element.removeClass('trigger').animate({'opacity':'1'}, element.data('speed'))
+            if ( jQuery('.cssanimations').length ) {
+                element.removeClass('trigger');
+            } else {
+                element.removeClass('trigger').animate({'opacity':'1'}, element.data('speed'));
+            }
         }, element.data('delay'));            
     }
 }
