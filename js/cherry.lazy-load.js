@@ -1,5 +1,5 @@
 CherryLazyLoadPlugin = new (function($){
-    var effects = ['effect-slideup', '.trigger.effect-slidedown', '.trigger.effect-slidefromleft', '.trigger.effect-slidefromright', '.trigger.effect-zoomin', '.trigger.effect-zoomout', '.trigger.effect-rotate', '.trigger.effect-skew']
+    var effects = ['effect-slideup', 'effect-slidedown', 'effect-slidefromleft', 'effect-slidefromright', 'effect-zoomin', 'effect-zoomout', 'effect-rotate', 'effect-skew']
     /* Can be set programatically later instead of adding a tag class to the DOM */
     this.useCSSAnimations = jQuery('.cssanimations').length;
     /* Default delay */
@@ -39,7 +39,7 @@ CherryLazyLoadPlugin = new (function($){
     };
 
     function registerAnimation(element, effect, delay, speed) {
-        effect = effect || 'random'
+        var effect = effect || 'random'
         if(effect == 'random'){
             effect = effects[Math.floor(Math.random()*effects.length)];
         }
@@ -53,8 +53,10 @@ CherryLazyLoadPlugin = new (function($){
     };
     this.registerAnimation = registerAnimation;
     $.fn.cherryLazyLoad = function(effect, delay, speed){ 
-        /* Add a quick jQuery hook */
-        registerAnimation(this, effect, delay, speed);
+        /* Add a quick jQuery hook. Register each element individually, especially for `random` effect. */
+        $(this).each(function(){ 
+            registerAnimation(this, effect, delay, speed);
+        })
     };
 
     $(window).load(function() {
