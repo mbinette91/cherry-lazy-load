@@ -6,6 +6,8 @@ CherryLazyLoadPlugin = new (function($){
     this.defaultDelay = undefined;
     /* Default speed */
     this.defaultSpeed = undefined;
+    // List of callbacks local to this scope
+    var callbacks = []
 
     var that = this;
     function getWindowHeight() {
@@ -34,29 +36,45 @@ CherryLazyLoadPlugin = new (function($){
                 } else {
                     element.removeClass('trigger').animate({'opacity':'1'}, element.data('speed') !== undefined? element.data('speed') : that.defaultSpeed);
                 }
+                /* Check if there is a callback associated with this element. */
+                if (element.data('callback-id') !== undefined) {
+                    var callback_id = element.data('callback-id');
+                    if(callback_id >= 0 && callback_id < callbacks.length)
+                        callbacks[callback_id](element);
+                }
             }, element.data('delay') !== undefined? element.data('delay') : that.defaultDelay);            
         }
     };
 
-    function registerAnimation(element, effect, delay, speed) {
+    function registerAnimation(element, effect, delay, speed, callback) {
         var effect = effect || 'random'
         if(effect == 'random'){
-            effect = effects[Math.floor(Math.random()*effects.length)];
+            effect = effects[Math.floor(Math.random() * effects.length)];
         }
         $(element).addClass('lazy-load-box').addClass('trigger').addClass(effect);
 
         if(delay !== undefined)
-            $(element).attr('data-delay', delay)
+            $(element).data('delay', delay);
 
         if(speed !== undefined)
-            $(element).attr('data-speed', speed)
+            $(element).data('speed', speed);
+
+        if(callback !== undefined) {
+            count = callbacks.push(callback);
+            $(element).data('callback-id', count - 1);
+        }
     };
     this.registerAnimation = registerAnimation;
-    $.fn.cherryLazyLoad = function(effect, delay, speed){ 
-        /* Add a quick jQuery hook. Register each element individually, especially for `random` effect. */
+
+    /* 
+     * jQuery hook for CherryLazyLoadPlugin.registerAnimation: 
+     *   Registers each element individually (especially for `random` effect).
+     *   callback(element): will be passed the appearing element as first parameter.
+     */
+    $.fn.cherryLazyLoad = function(effect, delay, speed, callback) { 
         $(this).each(function(){ 
-            registerAnimation(this, effect, delay, speed);
-        })
+            registerAnimation(this, effect, delay, speed, callback);
+        });
     };
 
     $(window).load(function() {
